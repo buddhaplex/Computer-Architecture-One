@@ -5,6 +5,10 @@ const LDI = 0b10011001;
 const PRN = 0b01000011;
 const HLT = 0b00000001;
 const MUL = 0b10101010;
+const PUSH = 0b01001101;
+const POP = 0b01001100;
+
+const SP = 7;
 /**
  * Class for simulating a simple Computer (CPU & memory)
  */
@@ -17,6 +21,8 @@ class CPU {
         this.ram = ram;
 
         this.reg = new Array(8).fill(0); // General-purpose registers R0-R7
+
+        this.reg[SP] = 0xF4; // init stack pointer
         
         // Special-purpose registers
         this.PC = 0; // Program Counter
@@ -87,6 +93,7 @@ class CPU {
 
         // Execute the instruction. Perform the actions for the instruction as
         // outlined in the LS-8 spec.
+        this.pcAdvance = true;
 
         switch(IR) {
             case LDI:
@@ -107,6 +114,22 @@ class CPU {
                 this.alu("MUL", operandA, operandB);
                 break;
 
+            case PUSH:
+                this.reg[SP]--;
+                this.ram.write(this.reg[SP], this.reg[operandA]);
+                break;
+/*
+            case CALL:
+                this.pushValue(this.PC +2);
+                // more to do
+                this.pcAdvance = false;
+                break;
+*/
+            case POP:
+                this.reg[operandA] = this.ram.read(this.reg[SP], );
+                this.reg[SP]++;
+                break;
+
             default:
                 console.log("Unknown instruction: " + IR.toString(2));
                 this.stopClock();
@@ -119,8 +142,15 @@ class CPU {
         // can be 1, 2, or 3 bytes long. Hint: the high 2 bits of the
         // instruction byte tells you how many bytes follow the instruction byte
         // for any particular instruction.
-        const instLen = (IR >> 6) + 1;
-        this.PC += instLen;
+        if (this.pcAdvance) {
+            const instLen = (IR >> 6) + 1;
+            this.PC += instLen;
+        }
+    }
+
+    pushValue(v) {
+        this.reg[SP]--;
+        this.ram.write(this.reg[SP], v);
     }
 }
 
