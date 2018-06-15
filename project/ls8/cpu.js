@@ -118,7 +118,7 @@ class CPU {
                 this.reg[SP]--;
                 this.ram.write(this.reg[SP], this.reg[operandA]);
                 break;
-                
+
             case CALL:
 +                console.log("SP starting at: ", this.reg[SP]);
 +                this.pushValue(this.PC + 2);
@@ -130,6 +130,41 @@ class CPU {
             case POP:
                 this.reg[operandA] = this.ram.read(this.reg[SP], );
                 this.reg[SP]++;
+                break;
+
+                case CMP:
+                if(this.reg[operandA] === this.reg[operandB]) {
+                    E = 1;
+                } else {
+                    E = 0;
+                } 
+                if(this.reg[operandA] > this.reg[operandB]) {
+                    G = 1;   
+                } else {
+                    G = 0;
+                }
+                if(this.reg[operandA] < this.reg[operandB]) {
+                    L = 1;    
+                } else {
+                    L = 0;
+                }
+                this.PC +=3;
+                break;
+
+            case JMP:
+                IR = this.reg[operandA];
+                break;
+
+            case JEQ:
+                if( E === 1) {
+                    this.PC = this.reg[operandA];
+                }
+                break;
+                
+            case JNE:
+                if( E === 0) {
+                    this.PC = this.reg[operandA];
+                }
                 break;
 
             default:
