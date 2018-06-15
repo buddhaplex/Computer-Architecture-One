@@ -118,13 +118,15 @@ class CPU {
                 this.reg[SP]--;
                 this.ram.write(this.reg[SP], this.reg[operandA]);
                 break;
-/*
+                
             case CALL:
-                this.pushValue(this.PC +2);
-                // more to do
-                this.pcAdvance = false;
-                break;
-*/
++                console.log("SP starting at: ", this.reg[SP]);
++                this.pushValue(this.PC + 2);
++                this.PC = operandA;
++                this.pcAdvance = false;
++                console.log("SP called to: ", this.reg[SP]);
++                break;
+
             case POP:
                 this.reg[operandA] = this.ram.read(this.reg[SP], );
                 this.reg[SP]++;
@@ -151,6 +153,14 @@ class CPU {
     pushValue(v) {
         this.reg[SP]--;
         this.ram.write(this.reg[SP], v);
+    }
+    popValue(e = null) {
+        if (e === null) {
+            const newVar = this.ram.read(this.reg[SP]);
+            this.reg[SP]++;
+
+            return newVar;
+        }
     }
 }
 
